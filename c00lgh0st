@@ -17,6 +17,11 @@ pcall(function()
 		Text = "Made by Hecker\n Remake: IgnahK",
 		Duration = 5
 	})
+StarterGui:SetCore("SendNotification", {
+		Title = "Ghost Follower",
+		Text = "players see you through ghost",
+		Duration = 5
+	})
 end)
 
 local character = player.Character or player.CharacterAdded:Wait()
