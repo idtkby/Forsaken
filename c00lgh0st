@@ -1,0 +1,151 @@
+-- SETTINGS
+local delay = 1.5
+local interval = 0.1
+local color = Color3.new(1, 0, 0)
+local tweenTime = interval
+
+-- SERVICES
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
+local player = Players.LocalPlayer
+
+pcall(function()
+	StarterGui:SetCore("SendNotification", {
+		Title = "Ghost Follower",
+		Text = "Made by Hecker\n Remake: IgnahK",
+		Duration = 5
+	})
+end)
+
+local character = player.Character or player.CharacterAdded:Wait()
+local ghost = nil
+local history = {}
+local tracking = false
+local connection
+
+-- GHOST CREATION
+local function makeGhost(char)
+	local ghostModel = Instance.new("Model")
+	ghostModel.Name = "GhostFollower"
+	for _, part in ipairs(char:GetChildren()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			local clone = Instance.new("Part")
+			clone.Name = "Ghost_" .. part.Name
+			clone.Size = part.Size
+			clone.Anchored = true
+			clone.CanCollide = false
+			clone.Transparency = 0.2
+			clone.Material = Enum.Material.ForceField
+			clone.Color = color
+			clone.CFrame = part.CFrame
+			clone.Parent = ghostModel
+		end
+	end
+	ghostModel.Parent = workspace
+	return ghostModel
+end
+
+-- TRACKING
+local function startTracking()
+	history = {}
+	ghost = makeGhost(character)
+	tracking = true
+
+	local maxHistory = math.floor(delay / interval)
+
+	connection = RunService.Heartbeat:Connect(function(dt)
+		if not character then return end
+
+		-- Lưu vị trí
+		local frame = {}
+		for _, part in ipairs(character:GetChildren()) do
+			if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+				frame[part.Name] = part.CFrame
+			end
+		end
+		table.insert(history, frame)
+		if #history > maxHistory then
+			table.remove(history, 1)
+		end
+
+		-- Di chuyển ghost
+		if #history > 0 and ghost then
+			local data = history[1]
+			for _, ghostPart in ipairs(ghost:GetChildren()) do
+				if ghostPart:IsA("BasePart") then
+					local realName = ghostPart.Name:sub(7)
+					if data[realName] then
+						local tween = TweenService:Create(ghostPart, TweenInfo.new(tweenTime, Enum.EasingStyle.Linear), {
+							CFrame = data[realName]
+						})
+						tween:Play()
+					end
+				end
+			end
+		end
+	end)
+end
+
+local function stopTracking()
+	if connection then connection:Disconnect() end
+	if ghost then ghost:Destroy() end
+	tracking = false
+end
+
+-- RESPAWN
+player.CharacterAdded:Connect(function(char)
+	character = char
+	repeat task.wait() until char:FindFirstChild("HumanoidRootPart")
+	if tracking then
+		stopTracking()
+		startTracking()
+	end
+end)
+
+-- GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "c00lgh0st"
+gui.ResetOnSpawn = false
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 260, 0, 120)
+mainFrame.Position = UDim2.new(0.5, -130, 1, -150)
+mainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+mainFrame.BorderColor3 = Color3.new(1, 0, 0)
+mainFrame.BorderSizePixel = 1
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundTransparency = 1
+title.Text = "c00lgh0st"
+title.TextColor3 = Color3.new(1, 0, 0)
+title.TextScaled = true
+title.Font = Enum.Font.Code
+title.Parent = mainFrame
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(1, -20, 0, 50)
+button.Position = UDim2.new(0, 10, 0, 50)
+button.BackgroundColor3 = Color3.new(0, 0, 0)
+button.BorderColor3 = Color3.new(1, 0, 0)
+button.BorderSizePixel = 1
+button.Text = "call ghost"
+button.TextColor3 = Color3.new(1, 0, 0)
+button.TextScaled = true
+button.Font = Enum.Font.Code
+button.Parent = mainFrame
+
+button.MouseButton1Click:Connect(function()
+	if tracking then
+		stopTracking()
+		button.Text = "call ghost"
+	else
+		startTracking()
+		button.Text = "dismiss ghost"
+	end
+end)
