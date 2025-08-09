@@ -13,13 +13,13 @@ local player = Players.LocalPlayer
 
 pcall(function()
 	StarterGui:SetCore("SendNotification", {
-		Title = "Ghost Follower",
+		Title = "Gh0st Follower",
 		Text = "Made by Hecker\n Remake: IgnahK",
 		Duration = 5
 	})
 StarterGui:SetCore("SendNotification", {
-		Title = "Ghost Follower",
-		Text = "players see you through ghost",
+		Title = "Gh0st Follower",
+		Text = "players see you through gh0st",
 		Duration = 5
 	})
 end)
@@ -127,7 +127,7 @@ mainFrame.Parent = gui
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundTransparency = 1
-title.Text = "c00lgh0st"
+title.Text = "cOOlghOst"
 title.TextColor3 = Color3.new(1, 0, 0)
 title.TextScaled = true
 title.Font = Enum.Font.Code
@@ -139,7 +139,7 @@ button.Position = UDim2.new(0, 10, 0, 50)
 button.BackgroundColor3 = Color3.new(0, 0, 0)
 button.BorderColor3 = Color3.new(1, 0, 0)
 button.BorderSizePixel = 1
-button.Text = "call ghost"
+button.Text = "call ghOst"
 button.TextColor3 = Color3.new(1, 0, 0)
 button.TextScaled = true
 button.Font = Enum.Font.Code
@@ -148,9 +148,9 @@ button.Parent = mainFrame
 button.MouseButton1Click:Connect(function()
 	if tracking then
 		stopTracking()
-		button.Text = "call ghost"
+		button.Text = "call ghOst"
 	else
 		startTracking()
-		button.Text = "dismiss ghost"
+		button.Text = "dismiss ghOst"
 	end
 end)
